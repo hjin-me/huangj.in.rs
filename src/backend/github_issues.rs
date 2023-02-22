@@ -1,3 +1,4 @@
+use anyhow::Result;
 use elasticsearch::indices::{IndicesCreateParts, IndicesExistsParts};
 use elasticsearch::{Elasticsearch, UpdateParts};
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
@@ -11,7 +12,7 @@ pub async fn sync_all_issues(
     owner: &String,
     repo: &String,
     es_client: &Elasticsearch,
-) -> Result<(), String> {
+) -> Result<()> {
     let request_url = format!("https://api.github.com/repos/{owner}/{repo}/issues");
     trace!("request_url: {}", request_url);
     trace!("github_token: {}", github_token);
@@ -32,21 +33,18 @@ pub async fn sync_all_issues(
         .timeout(Duration::new(10, 0))
         .build()
         .unwrap();
-    let response = client.get(&request_url).send().await.unwrap();
+    let response = client.get(&request_url).send().await?;
     // println!("{:?}", response.bytes().await.unwrap());
-    let issues: Vec<Issue> = response.json().await.unwrap();
+    let issues: Vec<Issue> = response.json().await?;
     // println!("{:?}", &issuess);
 
     const INDEX_NAME: &str = "blog";
-    let exist = index_exist(es_client, INDEX_NAME).await.unwrap();
+    let exist = index_exist(es_client, INDEX_NAME).await?;
     if !exist {
-        create_index(es_client, INDEX_NAME).await.unwrap();
+        create_index(es_client, INDEX_NAME).await?;
     }
     for issue in issues {
-        upsert_issue(es_client, INDEX_NAME, &issue)
-            .await
-            .map_err(|e| e.to_string())
-            .unwrap()
+        upsert_issue(es_client, INDEX_NAME, &issue).await?
     }
     Ok(())
 }

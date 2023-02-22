@@ -7,7 +7,7 @@ pub mod fallback;
 pub mod todo;
 
 #[cfg(feature = "ssr")]
-mod backend;
+pub mod backend;
 
 // Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {
@@ -18,7 +18,7 @@ cfg_if! {
         #[wasm_bindgen]
         pub fn hydrate() {
             console_error_panic_hook::set_once();
-            _ = console_log::init_with_level(log::Level::Debug);
+            // _ = console_log::init_with_level(log::Level::Debug);
             console_error_panic_hook::set_once();
 
             leptos::mount_to_body(|cx| {

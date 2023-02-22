@@ -30,13 +30,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         );
             handler(req).await.into_response()
     }
-        #[derive(Debug, Deserialize)]
-struct Config {
-    // github_sec: String,
-    github_token: String,
-    es_url: String,
-}
-/// Simple program to greet a person
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -61,9 +55,10 @@ struct Args {
         info!("Starting up {}", &args.config);
         let contents =
             fs::read_to_string(&args.config).expect("Should have been able to read the file");
-        let conf: Config = toml::from_str(contents.as_str()).unwrap();
+        let conf: hj::backend::Config = toml::from_str(contents.as_str()).unwrap();
 
         // crate::todo::register_server_functions();
+        hj::backend::serv(&conf).await;
 
         // Setting this to None means we'll be using cargo-leptos and its env vars
         let conf = get_configuration(None).await.unwrap();

@@ -907,7 +907,6 @@ dependencies = [
  "leptos_meta",
  "leptos_reactive",
  "leptos_router",
- "log",
  "once_cell",
  "reqwest",
  "serde",
