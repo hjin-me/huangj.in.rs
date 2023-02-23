@@ -32,7 +32,7 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
                 <Routes>
                     <Route path="" view=|cx| view! {
                         cx,
-                        <h1>"Home Page"</h1>
+                        <BlogList/>
                     }/> //Route
                     <Route path="blog/:id" view=|cx| view! {
                         cx,
