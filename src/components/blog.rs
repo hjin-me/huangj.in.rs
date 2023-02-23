@@ -1,17 +1,16 @@
 use crate::backend::blog::{get_one_blog, Post};
 use leptos::*;
 use leptos_router::*;
-use std::fmt::Display;
 use tracing::debug;
 
 #[cfg(feature = "ssr")]
 pub fn register_server_functions() {
-    _ = GetSingleBlog::register();
+    let _ = GetSingleBlog::register();
 }
 
 #[server(GetSingleBlog, "/api")]
-pub async fn get_single_blog() -> Result<Post, ServerFnError> {
-    let post = get_one_blog(36)
+pub async fn get_single_blog(id: u64) -> Result<Post, ServerFnError> {
+    let post = get_one_blog(id)
         .await
         .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
     debug!("post: {:#?}", post);
@@ -21,7 +20,19 @@ pub async fn get_single_blog() -> Result<Post, ServerFnError> {
 #[allow(non_snake_case)]
 #[component]
 pub fn SingleBlog(cx: Scope) -> impl IntoView {
-    let post = create_resource(cx, || (), |_| async { get_single_blog().await });
+    let params = use_params_map(cx);
+    let post = create_resource(
+        cx,
+        move || {
+            params.with(|p| {
+                p.get("id")
+                    .cloned()
+                    .map(|i| i.parse::<u64>().unwrap_or_default())
+                    .unwrap_or_default()
+            })
+        },
+        get_single_blog,
+    );
     let post_view = move || {
         post.with(cx, |post| {
             let post = post.clone().unwrap();
@@ -47,6 +58,63 @@ pub fn SingleBlog(cx: Scope) -> impl IntoView {
 #[allow(non_snake_case)]
 #[component]
 pub fn Blog(cx: Scope, #[prop()] post: Post) -> impl IntoView {
+    let format = time::format_description::parse("[year]/[month]/[day]").unwrap();
+    let mut outdated = false;
+    for o in &post.labels {
+        if o.name == "Outdated" {
+            outdated = true
+        }
+    }
+    let mut outdated_info = "latest";
+    if outdated {
+        outdated_info = "outdated"
+    } else {
+        // modify_expired, post_expired
+        if post
+            .updated_at
+            .sub(OffsetDateTime::now_utc())
+            .whole_days()
+            .abs()
+            > 365
+        {
+            outdated_info = "modify_expired"
+        } else if post
+            .created_at
+            .sub(OffsetDateTime::now_utc())
+            .whole_days()
+            .abs()
+            > 500
+        {
+            outdated_info = "post_expired"
+        }
+    }
+    let outdated_view = match outdated_info {
+        "outdated" => view! {
+            cx,
+            <div class="alert alert-danger">
+            "警告：本文已被标记为过期存档，文中所描述的信息已发生改变，请不要使用。"
+        </div>
+        },
+        "modify_expired" => view! {
+            cx,
+            <div class="alert alert-warning">
+            "提醒：本文最后更新于" {post.updated_at.format(&format)}
+            "，文中所描述的信息可能已发生改变，请谨慎使用。"
+        </div>
+        },
+        "post_expired" => view! {
+            cx,
+            <div class="alert alert-warning">
+            "提醒：本文发布于" {post.created_at.format(&format)}
+            "，文中所描述的信息可能已发生改变，请谨慎使用。"
+        </div>
+        },
+        _ => view! {
+            cx,
+            <div/>
+        },
+    };
+
     view! {
         cx,
         <article
@@ -74,6 +142,7 @@ pub fn Blog(cx: Scope, #[prop()] post: Post) -> impl IntoView {
                 </p>
             </header>
             <div class="post-content e-content markdown-body" id="write" itemProp="articleBody">
+                {outdated_view}
                 <div inner_html=post.body_html></div>
             </div>
         </article>

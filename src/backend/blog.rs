@@ -128,35 +128,6 @@ pub async fn get_one_blog(id: u64) -> Result<Post> {
     let es_client = get_client().await?;
     let p = get_by_number(&id, "blog", &es_client).await?;
 
-    let format = time::format_description::parse("[year]/[month]/[day]").unwrap();
-    let mut outdated = false;
-    for o in &p.labels {
-        if o.name == "Outdated" {
-            outdated = true
-        }
-    }
-    let mut outdated_info = "latest";
-    if outdated {
-        outdated_info = "outdated"
-    } else {
-        // modify_expired, post_expired
-        if p.updated_at
-            .sub(time::OffsetDateTime::now_utc())
-            .whole_days()
-            .abs()
-            > 365
-        {
-            outdated_info = "modify_expired"
-        } else if p
-            .created_at
-            .sub(time::OffsetDateTime::now_utc())
-            .whole_days()
-            .abs()
-            > 500
-        {
-            outdated_info = "post_expired"
-        }
-    }
     Ok(p)
 }
 // pub struct PageTemplate<'a> {
