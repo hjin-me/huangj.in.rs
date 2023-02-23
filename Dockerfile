@@ -2,8 +2,9 @@ FROM rust:latest as builder
 RUN apt-get update && apt-get install -y librust-clang-sys-dev
 WORKDIR /build
 COPY . .
-RUN rustup install nightly
-RUN rust default nightly
+RUN rustup toolchain install nightly
+RUN rustup default nightly
+RUN rustup target add wasm32-unknown-unknown
 RUN cargo install --locked cargo-leptos
 RUN cargo leptos build --release
 
