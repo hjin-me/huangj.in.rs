@@ -5,9 +5,7 @@ use leptos::*;
 cfg_if! { if #[cfg(feature = "ssr")] {
     use axum::{
         routing::{post, get, any},
-        extract::{Extension, Path},
-        http::Request,
-        response::{IntoResponse, Response},
+        extract::{Extension},
         Router,
     };
     use clap::Parser;
@@ -18,7 +16,10 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use std::sync::Arc;
     use std::fs;
-    use tracing::{info, trace, Level};
+    use tracing::{info, Level};
+    use tower_http::{compression::CompressionLayer};
+    use tower_http::{trace::TraceLayer};
+    use tower::ServiceBuilder;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -57,14 +58,20 @@ struct Args {
 
         // build our application with a route
         let app = Router::new()
-           .route("/liveness", get(|| async { "I'm alive!" }))
+            .layer(CompressionLayer::new())
+            .route("/liveness", get(|| async { "I'm alive!" }))
             .route("/readiness", get(|| async { "I'm ready!" }))
             .route("/hook/github", any(github_hook::github_hook))
             .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
             .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <BlogApp/> } )
             .fallback(file_and_error_handler)
             .layer(Extension(Arc::new(leptos_options)))
-            .layer(Extension(Arc::new(serv_conf)));
+            .layer(Extension(Arc::new(serv_conf)))
+            .layer(
+                ServiceBuilder::new()
+                    .layer(TraceLayer::new_for_http())
+                    .layer(CompressionLayer::new())
+            );
 
         // run our app with hyper
         // `axum::Server` is a re-export of `hyper::Server`

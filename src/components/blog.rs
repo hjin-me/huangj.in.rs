@@ -233,15 +233,39 @@ pub fn datetime(s: OffsetDateTime) -> anyhow::Result<String> {
 }
 // Blogs
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BlogAbbrDisplay {
+    pub number: u64,
+    pub title: String,
+    pub created_at: OffsetDateTime, //"2017-06-05T02:27:43Z",
+    pub created_from_now: String,
+    pub updated_at: OffsetDateTime, //String,//"2018-05-23T16:30:12Z",
+    pub updated_from_now: String,
+}
+
+#[cfg(feature = "ssr")]
+impl From<Post> for BlogAbbrDisplay {
+    fn from(p: Post) -> Self {
+        BlogAbbrDisplay {
+            number: p.number,
+            title: p.title,
+            created_at: p.created_at,
+            created_from_now: from_now(p.created_at).unwrap_or(p.created_at.to_string()),
+            updated_at: p.updated_at,
+            updated_from_now: from_now(p.updated_at).unwrap_or(p.updated_at.to_string()),
+        }
+    }
+}
+
 #[server(GetBlogs, "/api")]
-pub async fn get_blogs(filter: Option<String>) -> Result<Vec<BlogDisplay>, ServerFnError> {
+pub async fn get_blogs(filter: Option<String>) -> Result<Vec<BlogAbbrDisplay>, ServerFnError> {
     let posts = get_blogs_with_filter(filter)
         .await
         .map(|ps| {
             ps.iter()
                 .map(|p| {
                     let p = p.clone();
-                    BlogDisplay::from(p)
+                    BlogAbbrDisplay::from(p)
                 })
                 .collect()
         })
@@ -286,7 +310,7 @@ pub fn BlogList(cx: Scope) -> impl IntoView {
 
 #[allow(non_snake_case)]
 #[component]
-pub fn BlogAbbr(cx: Scope, #[prop()] post: BlogDisplay) -> impl IntoView {
+pub fn BlogAbbr(cx: Scope, #[prop()] post: BlogAbbrDisplay) -> impl IntoView {
     view! {
         cx,
         <li>
