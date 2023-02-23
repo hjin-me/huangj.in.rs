@@ -2,7 +2,9 @@ FROM rust:latest as builder
 RUN apt-get update && apt-get install -y librust-clang-sys-dev
 WORKDIR /build
 COPY . .
-RUN cargo install -- cargo-leptos
+RUN rustup install nightly
+RUN rust default nightly
+RUN cargo install --locked cargo-leptos
 RUN cargo leptos build --release
 
 # debian release as the same as golang image
