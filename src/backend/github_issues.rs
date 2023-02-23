@@ -224,7 +224,7 @@ async fn upsert_issue(
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ssr"))]
 mod test {
     use crate::backend::github_issues::*;
     use std::fs;

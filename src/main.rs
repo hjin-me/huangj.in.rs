@@ -57,7 +57,7 @@ struct Args {
             fs::read_to_string(&args.config).expect("Should have been able to read the file");
         let conf: hj::backend::Config = toml::from_str(contents.as_str()).unwrap();
 
-        // crate::todo::register_server_functions();
+        blog::register_server_functions();
         hj::backend::serv(&conf).await;
 
         // Setting this to None means we'll be using cargo-leptos and its env vars

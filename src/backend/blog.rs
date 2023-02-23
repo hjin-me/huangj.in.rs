@@ -239,7 +239,7 @@ pub async fn get_all_blog() -> Result<String> {
 //     }
 // }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ssr"))]
 mod test {
     #[tokio::test]
     async fn test_get_by_number() {
