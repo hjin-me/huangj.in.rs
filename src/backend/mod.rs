@@ -1,4 +1,5 @@
 pub mod blog;
+#[cfg(feature = "ssr")]
 pub mod es;
 pub mod github_issues;
 use anyhow::Result;
@@ -11,7 +12,7 @@ pub struct Config {
     pub github_owner: String,
     pub es_url: String,
 }
-
+#[cfg(feature = "ssr")]
 pub async fn serv(conf: &Config) -> Result<()> {
     es::init(conf.es_url.as_str()).expect("初始化ES失败");
     let client = es::get_client().await?;

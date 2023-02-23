@@ -3,10 +3,12 @@ use leptos_meta::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
 
+use crate::components::blog::*;
+
 #[allow(non_snake_case)]
 #[component]
 pub fn BlogApp(cx: Scope) -> impl IntoView {
-    // provide_meta_context(cx);
+    provide_meta_context(cx);
     view! {
             cx,
         <Html lang="zh-hans"/>
@@ -27,7 +29,16 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
                 <Nav />
             </div>
             <div class="col-md-9 col-xl-5">
-                 "this is container"
+                <Routes>
+                    <Route path="" view=|cx| view! {
+                        cx,
+                        <h1>"Home Page"</h1>
+                    }/> //Route
+                    <Route path="blog/:id" view=|cx| view! {
+                        cx,
+                        <SingleBlog/>
+                    }/> //Route
+                </Routes>
             </div>
         </div>
     </div>

@@ -1,5 +1,7 @@
 use anyhow::Result;
+#[cfg(feature = "ssr")]
 use elasticsearch::indices::{IndicesCreateParts, IndicesExistsParts};
+#[cfg(feature = "ssr")]
 use elasticsearch::{Elasticsearch, UpdateParts};
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
 use serde::{Deserialize, Serialize};
@@ -7,6 +9,7 @@ use serde_json::json;
 use std::time::Duration;
 use tracing::trace;
 
+#[cfg(feature = "ssr")]
 pub async fn sync_all_issues(
     github_token: &String,
     owner: &String,
@@ -117,6 +120,7 @@ pub struct Issue {
                                // "state_reason": null
 }
 
+#[cfg(feature = "ssr")]
 async fn index_exist(client: &Elasticsearch, index: &str) -> Result<bool, elasticsearch::Error> {
     let resp = client
         .indices()
@@ -132,6 +136,8 @@ async fn index_exist(client: &Elasticsearch, index: &str) -> Result<bool, elasti
         Ok(false)
     }
 }
+
+#[cfg(feature = "ssr")]
 async fn create_index(client: &Elasticsearch, index: &str) -> Result<(), elasticsearch::Error> {
     let resp = client
         .indices()
@@ -195,6 +201,7 @@ async fn create_index(client: &Elasticsearch, index: &str) -> Result<(), elastic
     }
 }
 
+#[cfg(feature = "ssr")]
 async fn upsert_issue(
     client: &Elasticsearch,
     index: &str,
