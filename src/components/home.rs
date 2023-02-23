@@ -54,7 +54,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
         <header class="container-fluid site-header" role="banner">
         <div class="row header-row">
             <div class="col-md-3 col-xl-2">
-                <div class="header-title"><a href="/" class="site-title" rel="author"> "黄进的个人网站" </a></div>
+                <div class="header-title"><A href="" class="site-title"> "黄进的个人网站" </A></div>
             </div>
             <div class="col-md-9 col-xl-10 align-items-center justify-content-end d-none d-md-flex">
                 <form action="/search" method="get"><input name="query" class="query-input" placeholder="搜索"/></form>
@@ -86,7 +86,7 @@ pub fn Nav(cx: Scope) -> impl IntoView {
         cx,
         <div class="sidebar-col d-none d-md-block">
         <div class="menu">
-            <a href="/blog" class="menu-item active">"文章"</a>
+            <A href="" class="menu-item active">"文章"</A>
             <a href="https://github.com/hjin-me" target="_blank" class="menu-item">"Github"</a>
         </div>
         </div>
