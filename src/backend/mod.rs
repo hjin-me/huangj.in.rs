@@ -1,7 +1,10 @@
 pub mod blog;
 #[cfg(feature = "ssr")]
 pub mod es;
+#[cfg(feature = "ssr")]
+pub mod github_hook;
 pub mod github_issues;
+
 use anyhow::Result;
 use serde::Deserialize;
 use tracing::{info, trace};

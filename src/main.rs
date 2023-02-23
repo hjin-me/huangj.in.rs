@@ -1,9 +1,10 @@
 use cfg_if::cfg_if;
+use hj::backend::github_hook;
 use leptos::*;
 // boilerplate to run in different modes
 cfg_if! { if #[cfg(feature = "ssr")] {
     use axum::{
-        routing::{post, get},
+        routing::{post, get, any},
         extract::{Extension, Path},
         http::Request,
         response::{IntoResponse, Response},
@@ -19,17 +20,6 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use std::fs;
     use serde::Deserialize;
     use tracing::{info, trace, Level};
-
-    //Define a handler to test extractor with state
-    async fn custom_handler(Path(id): Path<String>, Extension(options): Extension<Arc<LeptosOptions>>, req: Request<AxumBody>) -> Response{
-            let handler = leptos_axum::render_app_to_stream_with_context((*options).clone(),
-            move |cx| {
-                provide_context(cx, id.clone());
-            },
-            |cx| view! { cx, <BlogApp/> }
-        );
-            handler(req).await.into_response()
-    }
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -55,24 +45,27 @@ struct Args {
         info!("Starting up {}", &args.config);
         let contents =
             fs::read_to_string(&args.config).expect("Should have been able to read the file");
-        let conf: hj::backend::Config = toml::from_str(contents.as_str()).unwrap();
+        let serv_conf: hj::backend::Config = toml::from_str(contents.as_str()).unwrap();
 
         blog::register_server_functions();
-        hj::backend::serv(&conf).await;
+        hj::backend::serv(&serv_conf).await.unwrap();
 
         // Setting this to None means we'll be using cargo-leptos and its env vars
         let conf = get_configuration(None).await.unwrap();
-        let leptos_options = conf.leptos_options;
+        let leptos_options = conf.leptos_options.clone();
         let addr = leptos_options.site_addr;
         let routes = generate_route_list(|cx| view! { cx, <BlogApp/> }).await;
 
         // build our application with a route
         let app = Router::new()
-        .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
-        .route("/special/:id", get(custom_handler))
-        .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <BlogApp/> } )
-        .fallback(file_and_error_handler)
-        .layer(Extension(Arc::new(leptos_options)));
+           .route("/liveness", get(|| async { "I'm alive!" }))
+            .route("/readiness", get(|| async { "I'm ready!" }))
+            .route("/hook/github", any(github_hook::github_hook))
+            .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
+            .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <BlogApp/> } )
+            .fallback(file_and_error_handler)
+            .layer(Extension(Arc::new(leptos_options)))
+            .layer(Extension(Arc::new(serv_conf)));
 
         // run our app with hyper
         // `axum::Server` is a re-export of `hyper::Server`

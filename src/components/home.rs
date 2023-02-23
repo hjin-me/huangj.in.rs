@@ -4,6 +4,7 @@ use leptos_router::*;
 use serde::{Deserialize, Serialize};
 
 use crate::components::blog::*;
+use crate::components::search::*;
 
 #[allow(non_snake_case)]
 #[component]
@@ -16,7 +17,7 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
       // reactively sets document.title when `name` changes
       text="黄进的个人网站 - HuangJ.in"
       // applies the `formatter` function to the `text` value
-      formatter=|text| format!("{text} is your name")
+      formatter=|text| format!("{text}")
     />
         <Meta name="description" content="黄进的个人网站"/>
     <Meta name="keywords" content="HJin.me,HuangJ.in,黄进"/>
@@ -33,6 +34,10 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
                     <Route path="" view=|cx| view! {
                         cx,
                         <BlogList/>
+                    }/> //Route
+                    <Route path="search" view=|cx| view! {
+                        cx,
+                        <SearchPage/>
                     }/> //Route
                     <Route path="blog/:id" view=|cx| view! {
                         cx,
@@ -57,7 +62,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
                 <div class="header-title"><A href="" class="site-title"> "黄进的个人网站" </A></div>
             </div>
             <div class="col-md-9 col-xl-10 align-items-center justify-content-end d-none d-md-flex">
-                <form action="/search" method="get"><input name="query" class="query-input" placeholder="搜索"/></form>
+                <Form action="/search" method="get"><input name="query" class="query-input" placeholder="搜索"/></Form>
             </div>
         </div>
     </header>
