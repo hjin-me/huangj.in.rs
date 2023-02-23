@@ -20,5 +20,5 @@ RUN locale-gen zh_CN.UTF-8; \
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
 ENV TZ Asia/Shanghai
 ENV LANG zh_US.utf8
-COPY --from=builder /output/release/hjserv /usr/local/bin/hjserv
-ENTRYPOINT ["hjserv"]
+COPY --from=builder /output/release/hj /usr/local/bin/hj
+ENTRYPOINT ["hj"]

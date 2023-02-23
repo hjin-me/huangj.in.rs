@@ -49,6 +49,7 @@ $RECYCLE.BIN/
 
 # Added by cargo
 
+/data
 /target
 .fleet/
 config.toml

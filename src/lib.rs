@@ -5,14 +5,12 @@ pub mod components;
 pub mod error_template;
 pub mod errors;
 pub mod fallback;
-use components::home::*;
-// pub mod todo;
 
 // Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {
     if #[cfg(feature = "hydrate")] {
         use wasm_bindgen::prelude::wasm_bindgen;
-        // use crate::todo::*;
+        use components::home::*;
 
         #[wasm_bindgen]
         pub fn hydrate() {

@@ -1,8 +1,6 @@
 use crate::components::blog::*;
 use leptos::*;
-use leptos_meta::*;
 use leptos_router::*;
-use serde::{Deserialize, Serialize};
 
 #[allow(non_snake_case)]
 #[component]

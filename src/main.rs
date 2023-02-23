@@ -11,14 +11,13 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         Router,
     };
     use clap::Parser;
-    use axum::body::Body as AxumBody;
+
     use hj::components::*;
     use hj::components::home::*;
     use hj::fallback::file_and_error_handler;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use std::sync::Arc;
     use std::fs;
-    use serde::Deserialize;
     use tracing::{info, trace, Level};
 
 #[derive(Parser, Debug)]
