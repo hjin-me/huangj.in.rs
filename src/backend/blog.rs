@@ -5,13 +5,11 @@ use anyhow::{anyhow, Result};
 use elasticsearch::{Elasticsearch, SearchParts};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-#[cfg(feature = "ssr")]
-use std::ops::Sub;
 
 #[cfg(feature = "ssr")]
 pub async fn get_by_number(id: &u64, index: &str, es_client: &Elasticsearch) -> Result<Post> {
     let r = es_client
-        .search(SearchParts::Index(&[&index]))
+        .search(SearchParts::Index(&[index]))
         .body(json!({
             "query": {
                 "match": {
@@ -66,7 +64,7 @@ pub async fn get_latest_with_filter(
         }),
     };
     let r = es_client
-        .search(SearchParts::Index(&[&index]))
+        .search(SearchParts::Index(&[index]))
         .body(body)
         .send()
         .await
@@ -152,7 +150,7 @@ pub async fn get_blogs_with_filter(filter: Option<String>) -> Result<Vec<Post>> 
     Ok(posts)
 }
 #[cfg(not(feature = "ssr"))]
-pub async fn get_blogs_with_filter(filter: Option<String>) -> Result<Vec<Post>> {
+pub async fn get_blogs_with_filter(_filter: Option<String>) -> Result<Vec<Post>> {
     Ok(vec![])
 }
 

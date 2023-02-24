@@ -3,6 +3,10 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "ssr")]
+use std::ops::Sub;
+use time::macros::format_description;
+use time::OffsetDateTime;
 use tracing::debug;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -162,10 +166,6 @@ pub fn Blog(cx: Scope, #[prop()] post: BlogDisplay) -> impl IntoView {
     }
 }
 
-use std::ops::Sub;
-use time::macros::format_description;
-use time::OffsetDateTime;
-
 // This filter does not have extra arguments
 #[cfg(feature = "ssr")]
 pub fn from_now(s: OffsetDateTime) -> anyhow::Result<String> {
@@ -190,11 +190,11 @@ pub fn from_now(s: OffsetDateTime) -> anyhow::Result<String> {
             append
         ));
     }
-    return Ok(format!(
+    Ok(format!(
         "{} 年{}",
         d.whole_seconds().abs() / 365 / 24 / 60 / 60,
         append
-    ));
+    ))
 }
 #[cfg(feature = "ssr")]
 fn outdated(post: &Post) -> String {
@@ -345,7 +345,7 @@ mod test {
         // );
         println!("{}", OffsetDateTime::now_utc().format(&format).unwrap());
         let s = "2022-02-03 2:07:03.410441 +00:00:00";
-        let date = OffsetDateTime::parse(&s, &format).unwrap();
+        let date = OffsetDateTime::parse(s, &format).unwrap();
         assert_eq!("2022-02-03 2:07:03.410441 +00:00:00", date.to_string())
     }
 }
