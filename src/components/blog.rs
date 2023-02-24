@@ -87,7 +87,6 @@ pub fn SingleBlog(cx: Scope) -> impl IntoView {
     view! {
             cx,
             <main class="page-content" aria-label="Content">
-                <Title text="Page A"/>
         <div class="wrapper">
         <Suspense fallback=move || view! { cx, <p>"Loading posts..."</p> }>
            {post_view}

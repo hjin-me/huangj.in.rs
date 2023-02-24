@@ -23,6 +23,12 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
         <Meta name="description" content="黄进的个人网站"/>
     <Meta name="keywords" content="HJin.me,HuangJ.in,黄进"/>
     <Stylesheet href="/pkg/hj.css"/>
+        <Script async_="true" src="https://www.googletagmanager.com/gtag/js?id=G-2H2MBC31ST"/>
+        <Script>"window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-2H2MBC31ST')"</Script>
             <Router>
         <Header />
     <div class="container-fluid main">
