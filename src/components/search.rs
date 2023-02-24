@@ -1,5 +1,6 @@
 use crate::components::blog::*;
 use leptos::*;
+use leptos_meta::*;
 use leptos_router::*;
 
 #[allow(non_snake_case)]
@@ -27,12 +28,13 @@ pub fn SearchPage(cx: Scope) -> impl IntoView {
                 .collect::<Vec<_>>()
         })
     };
-
+    let title = format!("搜索: {}", &query_key);
     view! {
         cx,
         <main class="page-content" aria-label="Content">
             <div class="wrapper">
                 <div class="home">
+                    <Title text=title />
                     <h1>"搜索: "{query_key}</h1>
                     <Suspense fallback=move || view! { cx, <p>"Loading..."</p> }>
                         <ul class="post-list">

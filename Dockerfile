@@ -27,4 +27,6 @@ COPY --from=builder /build/target/server/release/hj /usr/local/bin/hj
 COPY --from=builder /build/target/site /webser/www
 ENV LEPTOS_OUTPUT_NAME hj
 ENV LEPTOS_SITE_ROOT /webser/www
+ENV LEPTOS_SITE_ADDR 0.0.0.0:3000
+EXPOSE 3000
 ENTRYPOINT ["hj"]

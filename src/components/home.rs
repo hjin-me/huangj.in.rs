@@ -1,7 +1,6 @@
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use serde::{Deserialize, Serialize};
 
 use crate::components::blog::*;
 use crate::components::search::*;
@@ -10,6 +9,8 @@ use crate::components::search::*;
 #[component]
 pub fn BlogApp(cx: Scope) -> impl IntoView {
     provide_meta_context(cx);
+    let formatter = |text| format!("{text} — 黄进的个人网站 - HuangJ.in");
+
     view! {
             cx,
         <Html lang="zh-hans"/>
@@ -17,7 +18,7 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
       // reactively sets document.title when `name` changes
       text="黄进的个人网站 - HuangJ.in"
       // applies the `formatter` function to the `text` value
-      formatter=|text| format!("{text}")
+      formatter=formatter
     />
         <Meta name="description" content="黄进的个人网站"/>
     <Meta name="keywords" content="HJin.me,HuangJ.in,黄进"/>

@@ -1,5 +1,6 @@
 use crate::backend::blog::{get_blogs_with_filter, get_one_blog, Post, PostLabel};
 use leptos::*;
+use leptos_meta::*;
 use leptos_router::*;
 use serde::{Deserialize, Serialize};
 use tracing::debug;
@@ -74,8 +75,10 @@ pub fn SingleBlog(cx: Scope) -> impl IntoView {
     let post_view = move || {
         post.with(cx, |post| {
             let post = post.clone().unwrap();
+            let title = post.title.clone();
             view! {
                 cx,
+                 <Title text=title />
                  <Blog post=post/>
             }
         })
@@ -84,6 +87,7 @@ pub fn SingleBlog(cx: Scope) -> impl IntoView {
     view! {
             cx,
             <main class="page-content" aria-label="Content">
+                <Title text="Page A"/>
         <div class="wrapper">
         <Suspense fallback=move || view! { cx, <p>"Loading posts..."</p> }>
            {post_view}
@@ -108,15 +112,15 @@ pub fn Blog(cx: Scope, #[prop()] post: BlogDisplay) -> impl IntoView {
         "modify_expired" => view! {
             cx,
             <div class="alert alert-warning">
-            "提醒：本文最后更新于" {post.updated_at.format(&format)}
-            "，文中所描述的信息可能已发生改变，请谨慎使用。"
+            "提醒：本文最后更新于 " {post.updated_at.format(&format)}
+            " ，文中所描述的信息可能已发生改变，请谨慎使用。"
         </div>
         },
         "post_expired" => view! {
             cx,
             <div class="alert alert-warning">
-            "提醒：本文发布于" {post.created_at.format(&format)}
-            "，文中所描述的信息可能已发生改变，请谨慎使用。"
+            "提醒：本文发布于 " {post.created_at.format(&format)}
+            " ，文中所描述的信息可能已发生改变，请谨慎使用。"
         </div>
         },
         _ => view! {
@@ -135,7 +139,7 @@ pub fn Blog(cx: Scope, #[prop()] post: BlogDisplay) -> impl IntoView {
             <header class="post-header">
                 <h1 class="post-title p-name" itemProp="name headline">{post.title}</h1>
                 <p class="post-meta">
-                    "最后更新于"
+                    "最后更新于 "
                     <time
                         class="dt-published"
                         dateTime=datetime(post.updated_at).unwrap()
@@ -143,10 +147,10 @@ pub fn Blog(cx: Scope, #[prop()] post: BlogDisplay) -> impl IntoView {
                     >
                         {post.updated_from_now}
                     </time>
-                    "•"
-                    <span itemProp="author" itemScope itemType="http://schema.org/Person">
+                    " • "
+                    <span itemProp="author" itemScope itemType="https://schema.org/Person">
                     <span class="p-author h-card" itemProp="name">
-                      "HJin"
+                      " HJin "
                     </span>
                   </span>
                 </p>
@@ -297,6 +301,7 @@ pub fn BlogList(cx: Scope) -> impl IntoView {
         <main class="page-content" aria-label="Content">
             <div class="wrapper">
                 <div class="home">
+                    <Title text="首页" />
                     <Suspense fallback=move || view! { cx, <p>"Loading..."</p> }>
                         <ul class="post-list">
                             {posts_view}

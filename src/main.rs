@@ -27,6 +27,8 @@ struct Args {
     /// Number of times to greet
     #[arg(short, long, default_value = "./config.toml")]
     config: String,
+    #[arg(short, long, default_value = "info")]
+    log: String,
 }
 
     #[tokio::main]
@@ -37,7 +39,7 @@ struct Args {
         let subscriber = tracing_subscriber::FmtSubscriber::builder()
         // all spans/events with a level higher than TRACE (e.g, debug, info, warn, etc.)
         // will be written to stdout.
-        .with_max_level(Level::DEBUG)
+        .with_max_level(args.log.parse::<Level>().unwrap_or(Level::INFO))
         // completes the builder.
         .finish();
 
