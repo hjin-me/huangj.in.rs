@@ -1,17 +1,21 @@
-# Leptos Todo App Sqlite with Axum
+# 基于 Leptos 和 Axum 做的个人博客
 
-This example creates a basic todo app with an Axum backend that uses Leptos' server functions to call sqlx from the client and seamlessly run it on the server.
+使用 `axum` 作为服务端，`leptos` 作为渲染库，实现的 SPA + SSR 个人博客网站。
 
-## Client Side Rendering
-This example cannot be built as a trunk standalone CSR-only app. Only the server may directly connect to the database.
+## Client Side Rendering (CSR)
+
+这个仓库不支持 CSR。如果需要 CSR 应用，请参考 leptos / dioxus / yew 。
 
 ## Server Side Rendering with cargo-leptos
-cargo-leptos is now the easiest and most featureful way to build server side rendered apps with hydration. It provides automatic recompilation of client and server code, wasm optimisation, CSS minification, and more! Check out more about it [here](https://github.com/akesson/cargo-leptos)
+
+`leptos` 提供的 `axum` 的集成，使用 `cargo-leptos` 来开发这个应用。
+
+It provides automatic recompilation of client and server code, wasm optimisation, CSS minification, and more! Check out more about it [here](https://github.com/akesson/cargo-leptos)
 
 1. Install cargo-leptos
 ```bash
 cargo install --locked cargo-leptos
-``` 
+```
 2. Build the site in watch mode, recompiling on file changes
 ```bash
 cargo leptos watch
@@ -36,7 +40,7 @@ cargo install wasm-pack
 ```bash
 wasm-pack build --target=web --debug --no-default-features --features=hydrate
 ```
-3. Run the server to serve the Webassembly, JS, and HTML 
+3. Run the server to serve the Webassembly, JS, and HTML
 ```bash
 cargo run --no-default-features --features=ssr
 ```
