@@ -1,6 +1,7 @@
-name: Build
+name: Build Image
 on:
   push:
+
     tags:
       - "**"             # Push events to v1 tag
 jobs:
