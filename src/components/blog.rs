@@ -319,7 +319,7 @@ pub fn BlogAbbr(cx: Scope, #[prop()] post: BlogAbbrDisplay) -> impl IntoView {
         cx,
         <li>
             <span class="post-meta">{ post.created_from_now }</span>
-            <h3><a href={format!("/blog/{}", post.number)} class="post-link">{ post.title }</a></h3>
+            <h3><a href=format!("/blog/{}", post.number) class="post-link">{ post.title }</a></h3>
         </li>
     }
 }

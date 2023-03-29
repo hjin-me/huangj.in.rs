@@ -41,15 +41,15 @@ pub fn BlogApp(cx: Scope) -> impl IntoView {
                     <Route path="" view=|cx| view! {
                         cx,
                         <BlogList/>
-                    }/> //Route
+                    } ssr=SsrMode::InOrder/> //Route
                     <Route path="search" view=|cx| view! {
                         cx,
                         <SearchPage/>
-                    }/> //Route
+                    } ssr=SsrMode::InOrder/> //Route
                     <Route path="blog/:id" view=|cx| view! {
                         cx,
                         <SingleBlog/>
-                    }/> //Route
+                    } ssr=SsrMode::InOrder/> //Route
                 </Routes>
             </div>
         </div>
