@@ -1,5 +1,5 @@
 use cfg_if::cfg_if;
-use hj::backend::github_hook;
+use hj_blog::backend::github_hook;
 use leptos::*;
 // boilerplate to run in different modes
 cfg_if! { if #[cfg(feature = "ssr")] {
@@ -10,9 +10,9 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     };
     use clap::Parser;
 
-    use hj::components::*;
-    use hj::components::home::*;
-    use hj::fallback::file_and_error_handler;
+    use hj_blog::components::*;
+    use hj_blog::components::home::*;
+    use hj_blog::fallback::file_and_error_handler;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use std::sync::Arc;
     use std::fs;
@@ -44,13 +44,15 @@ struct Args {
         .finish();
 
         tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
-        info!("Starting up {}", &args.config);
+        // get pwd
+        let pwd = std::env::current_dir().unwrap();
+        info!("Starting up {}, {:?}", &args.config, pwd);
         let contents =
             fs::read_to_string(&args.config).expect("Should have been able to read the file");
-        let serv_conf: hj::backend::Config = toml::from_str(contents.as_str()).unwrap();
+        let serv_conf: hj_blog::backend::Config = toml::from_str(contents.as_str()).unwrap();
 
         blog::register_server_functions();
-        hj::backend::serv(&serv_conf).await.unwrap();
+        hj_blog::backend::serv(&serv_conf).await.unwrap();
 
         // Setting this to None means we'll be using cargo-leptos and its env vars
         let conf = get_configuration(None).await.unwrap();
