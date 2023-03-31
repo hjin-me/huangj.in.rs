@@ -1,6 +1,7 @@
 FROM hjin/rust-nightly-wasm as builder
 WORKDIR /build
 COPY . .
+RUN cd blog
 RUN cargo install --locked cargo-leptos
 RUN cargo leptos build --release
 
@@ -19,10 +20,10 @@ RUN locale-gen zh_CN.UTF-8; \
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
 ENV TZ Asia/Shanghai
 ENV LANG zh_US.utf8
-COPY --from=builder /build/target/server/release/hj /usr/local/bin/hj
+COPY --from=builder /build/target/server/release/hj-blog /usr/local/bin/hj-blog
 COPY --from=builder /build/target/site /webser/www
 ENV LEPTOS_OUTPUT_NAME hj
 ENV LEPTOS_SITE_ROOT /webser/www
 ENV LEPTOS_SITE_ADDR 0.0.0.0:3000
 EXPOSE 3000
-ENTRYPOINT ["hj"]
+ENTRYPOINT ["hj-blog"]

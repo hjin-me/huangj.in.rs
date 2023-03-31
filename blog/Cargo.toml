@@ -45,7 +45,7 @@ hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 ssr = ["dep:axum", "dep:tower", "dep:tower-http", "dep:tokio", "leptos/ssr", "leptos_meta/ssr", "leptos_router/ssr", "dep:leptos_axum", "dep:elasticsearch", "dep:once_cell", "dep:toml"]
 
 [package.metadata.cargo-all-features]
-denylist = ["axum", "tower", "tower-http", "tokio", "leptos_axum"]
+denylist = ["axum", "tower", "tower-http", "tokio", "leptos_axum", "elasticsearch", "once_cell", "toml"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [package.metadata.leptos]

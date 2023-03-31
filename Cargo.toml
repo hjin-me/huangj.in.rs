@@ -1,5 +1,11 @@
 [workspace]
 members = [
     "blog",
-    "mp"
+    "mp",
 ]
+
+[[workspace.metadata.leptos]]
+# project name
+name = "hj-blog"
+bin-package = "hj-blog"
+lib-package = "hj-blog"

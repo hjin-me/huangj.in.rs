@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use hj_blog::backend::github_hook;
 use leptos::*;
 // boilerplate to run in different modes
 cfg_if! { if #[cfg(feature = "ssr")] {
@@ -13,6 +12,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use hj_blog::components::*;
     use hj_blog::components::home::*;
     use hj_blog::fallback::file_and_error_handler;
+    use hj_blog::backend::github_hook;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use std::sync::Arc;
     use std::fs;
