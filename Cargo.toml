@@ -8,4 +8,8 @@ members = [
 # project name
 name = "hj-blog"
 bin-package = "hj-blog"
+bin-features = ["ssr"]
+bin-default-features = false
 lib-package = "hj-blog"
+lib-features = ["hydrate"]
+lib-default-features = false
