@@ -6,6 +6,7 @@ use axum::{
 use clap::Parser;
 use leptos::*;
 
+use hj_blog::api;
 use hj_blog::backend::github_hook;
 use hj_blog::components::home::*;
 use hj_blog::components::*;
@@ -46,7 +47,7 @@ pub async fn serv() {
         fs::read_to_string(&args.config).expect("Should have been able to read the file");
     let serv_conf: hj_blog::backend::Config = toml::from_str(contents.as_str()).unwrap();
 
-    blog::register_server_functions();
+    api::register_server_functions();
     hj_blog::backend::serv(&serv_conf).await.unwrap();
 
     // Setting this to None means we'll be using cargo-leptos and its env vars

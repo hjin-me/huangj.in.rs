@@ -13,3 +13,10 @@ bin-default-features = false
 lib-package = "hj-blog"
 lib-features = ["hydrate"]
 lib-default-features = false
+
+# The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
+output-name = "hj"
+# [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
+style-file = "./blog/style.css"
+# [Optional] Files in the asset-dir will be copied to the site-root directory
+assets-dir = "blog/public"
