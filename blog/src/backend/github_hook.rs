@@ -1,10 +1,11 @@
 use crate::backend::github_issues::sync_all_issues;
-use crate::backend::{es, Config};
+use crate::backend::Config;
 use axum::extract::{Extension, TypedHeader};
 use axum::headers;
 use axum::headers::{Error, Header, HeaderName};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
+use elasticsearch::Elasticsearch;
 use lazy_static::lazy_static;
 use std::sync::Arc;
 
@@ -14,12 +15,12 @@ lazy_static! {
 
 pub async fn github_hook(
     TypedHeader(HubSignature(h)): TypedHeader<HubSignature>,
+    Extension(es_client): Extension<Arc<Elasticsearch>>,
     Extension(conf): Extension<Arc<Config>>,
 ) -> impl IntoResponse {
     if h.is_empty() {
         return StatusCode::BAD_REQUEST;
     }
-    let es_client = es::get_client().await.unwrap();
     match sync_all_issues(
         &conf.github_token,
         &conf.github_owner,

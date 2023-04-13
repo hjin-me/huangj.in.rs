@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "blog",
-    "mp",
 ]
 
 [[workspace.metadata.leptos]]

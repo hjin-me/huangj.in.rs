@@ -1,3 +1,5 @@
+#[cfg(feature = "ssr")]
+use elasticsearch::Elasticsearch;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -9,8 +11,11 @@ pub fn register_server_functions() {
 }
 
 #[server(GetSingleBlog, "/api")]
-pub async fn get_single_blog(id: u64) -> Result<BlogDisplay, ServerFnError> {
-    let post = crate::backend::blog::get_one_blog(id)
+pub async fn get_single_blog(cx: Scope, id: u64) -> Result<BlogDisplay, ServerFnError> {
+    let es_client = use_context::<std::sync::Arc<Elasticsearch>>(cx).ok_or(
+        ServerFnError::ServerError("Elasticsearch client not found".to_string()),
+    )?;
+    let post = crate::backend::blog::get_one_blog(&es_client, id)
         .await
         .map(BlogDisplay::from)
         .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
@@ -18,8 +23,14 @@ pub async fn get_single_blog(id: u64) -> Result<BlogDisplay, ServerFnError> {
 }
 
 #[server(GetBlogs, "/api")]
-pub async fn get_blogs(filter: Option<String>) -> Result<Vec<BlogAbbrDisplay>, ServerFnError> {
-    let posts = crate::backend::blog::get_blogs_with_filter(filter)
+pub async fn get_blogs(
+    cx: Scope,
+    filter: Option<String>,
+) -> Result<Vec<BlogAbbrDisplay>, ServerFnError> {
+    let es_client = use_context::<std::sync::Arc<Elasticsearch>>(cx).ok_or(
+        ServerFnError::ServerError("Elasticsearch client not found".to_string()),
+    )?;
+    let posts = crate::backend::blog::get_blogs_with_filter(&es_client, filter)
         .await
         .map(|ps| {
             ps.iter()
@@ -170,4 +181,29 @@ fn outdated(post: &crate::backend::blog::Post) -> String {
         }
     }
     outdated_info.to_string()
+}
+
+#[cfg(all(test, feature = "ssr"))]
+mod test {
+    use super::*;
+    use time::{format_description, OffsetDateTime};
+    #[test]
+    fn test_datetime() {
+        let s = OffsetDateTime::now_utc();
+        dbg!("{}", from_now(s).unwrap());
+    }
+    #[tokio::test]
+    async fn test_from_now() {
+        let format = format_description::parse(
+            "[year]-[month]-[day] [hour padding:none]:[minute]:[second].[subsecond] [offset_hour sign:mandatory]:[offset_minute]:[offset_second]",
+        ).unwrap();
+
+        // let format = format_description!(
+        //     "[year]-[month]-[day] [hour]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]:[offset_second]"
+        // );
+        println!("{}", OffsetDateTime::now_utc().format(&format).unwrap());
+        let s = "2022-02-03 2:07:03.410441 +00:00:00";
+        let date = OffsetDateTime::parse(s, &format).unwrap();
+        assert_eq!("2022-02-03 2:07:03.410441 +00:00:00", date.to_string())
+    }
 }

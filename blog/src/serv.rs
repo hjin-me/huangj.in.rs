@@ -1,17 +1,20 @@
+use axum::extract::Path;
+use axum::response::IntoResponse;
 use axum::{
+    body::Body as AxumBody,
     extract::Extension,
-    routing::{any, get, post},
+    http::{header::HeaderMap, Request},
+    routing::{any, get},
     Router,
 };
 use clap::Parser;
-use leptos::*;
-
+use elasticsearch::Elasticsearch;
 use hj_blog::api;
 use hj_blog::backend::github_hook;
 use hj_blog::components::home::*;
-use hj_blog::components::*;
 use hj_blog::fallback::file_and_error_handler;
-use leptos_axum::{generate_route_list, LeptosRoutes};
+use leptos::*;
+use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
 use std::fs;
 use std::sync::Arc;
 use tower::ServiceBuilder;
@@ -48,7 +51,12 @@ pub async fn serv() {
     let serv_conf: hj_blog::backend::Config = toml::from_str(contents.as_str()).unwrap();
 
     api::register_server_functions();
-    hj_blog::backend::serv(&serv_conf).await.unwrap();
+
+    let es_client = Arc::new(hj_blog::backend::es::init(&serv_conf.es_url).expect("初始化ES失败"));
+
+    hj_blog::backend::serv(&es_client, &serv_conf)
+        .await
+        .expect("同步文章数据失败");
 
     // Setting this to None means we'll be using cargo-leptos and its env vars
     let conf = get_configuration(None).await.unwrap();
@@ -56,21 +64,29 @@ pub async fn serv() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(|cx| view! { cx, <BlogApp/> }).await;
 
+    let leptos_es_client = es_client.clone();
     // build our application with a route
     let app = Router::new()
         .layer(CompressionLayer::new())
         .route("/liveness", get(|| async { "I'm alive!" }))
         .route("/readiness", get(|| async { "I'm ready!" }))
         .route("/hook/github", any(github_hook::github_hook))
-        .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
-        .leptos_routes(
+        .route(
+            "/api/*fn_name",
+            get(server_fn_handler).post(server_fn_handler),
+        )
+        .leptos_routes_with_context(
             leptos_options.clone(),
             routes,
+            move |cx| {
+                provide_context(cx, leptos_es_client.clone());
+            },
             |cx| view! { cx, <BlogApp/> },
         )
         .fallback(file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)))
         .layer(Extension(Arc::new(serv_conf)))
+        .layer(Extension(es_client))
         .layer(
             ServiceBuilder::new()
                 .layer(TraceLayer::new_for_http())
@@ -84,4 +100,22 @@ pub async fn serv() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn server_fn_handler(
+    Extension(es_client): Extension<Arc<Elasticsearch>>,
+    path: Path<String>,
+    headers: HeaderMap,
+    // raw_query: RawQuery,
+    request: Request<AxumBody>,
+) -> impl IntoResponse {
+    handle_server_fns_with_context(
+        path,
+        headers,
+        move |cx| {
+            provide_context(cx, es_client.clone());
+        },
+        request,
+    )
+    .await
 }

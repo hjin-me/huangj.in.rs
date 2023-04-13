@@ -1,7 +1,5 @@
 use anyhow::Result;
-#[cfg(feature = "ssr")]
 use elasticsearch::indices::{IndicesCreateParts, IndicesExistsParts};
-#[cfg(feature = "ssr")]
 use elasticsearch::{Elasticsearch, UpdateParts};
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
 use serde::{Deserialize, Serialize};
@@ -9,7 +7,6 @@ use serde_json::json;
 use std::time::Duration;
 use tracing::trace;
 
-#[cfg(feature = "ssr")]
 pub async fn sync_all_issues(
     github_token: &String,
     owner: &String,
@@ -120,7 +117,6 @@ pub struct Issue {
                                // "state_reason": null
 }
 
-#[cfg(feature = "ssr")]
 async fn index_exist(client: &Elasticsearch, index: &str) -> Result<bool, elasticsearch::Error> {
     let resp = client
         .indices()
@@ -137,7 +133,6 @@ async fn index_exist(client: &Elasticsearch, index: &str) -> Result<bool, elasti
     }
 }
 
-#[cfg(feature = "ssr")]
 async fn create_index(client: &Elasticsearch, index: &str) -> Result<(), elasticsearch::Error> {
     let resp = client
         .indices()
@@ -201,7 +196,6 @@ async fn create_index(client: &Elasticsearch, index: &str) -> Result<(), elastic
     }
 }
 
-#[cfg(feature = "ssr")]
 async fn upsert_issue(
     client: &Elasticsearch,
     index: &str,
@@ -224,7 +218,7 @@ async fn upsert_issue(
     }
 }
 
-#[cfg(all(test, feature = "ssr"))]
+#[cfg(test)]
 mod test {
     use crate::backend::github_issues::*;
     use std::fs;
@@ -239,7 +233,7 @@ mod test {
     #[tokio::test]
     async fn test_all_issues() {
         let contents =
-            fs::read_to_string(&"./config.toml").expect("Should have been able to read the file");
+            fs::read_to_string("./config.toml").expect("Should have been able to read the file");
         let conf: Config = toml::from_str(contents.as_str()).unwrap();
 
         let github_token = conf.github_token;

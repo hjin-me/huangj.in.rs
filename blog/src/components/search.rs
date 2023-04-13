@@ -11,7 +11,7 @@ pub fn SearchPage(cx: Scope) -> impl IntoView {
     let posts = create_resource(
         cx,
         move || query.with(|p| p.get("query").cloned()),
-        get_blogs,
+        move |p| get_blogs(cx, p),
     );
     let query_key = query.get().get("query").cloned().unwrap_or_default();
 

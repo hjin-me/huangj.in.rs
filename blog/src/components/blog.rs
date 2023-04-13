@@ -2,8 +2,6 @@ use crate::api::blog::{get_blogs, get_single_blog, BlogAbbrDisplay, BlogDisplay}
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-#[cfg(feature = "ssr")]
-use std::ops::Sub;
 use time::macros::format_description;
 use time::OffsetDateTime;
 
@@ -21,7 +19,7 @@ pub fn SingleBlog(cx: Scope) -> impl IntoView {
                     .unwrap_or_default()
             })
         },
-        get_single_blog,
+        move |id| get_single_blog(cx, id),
     );
     let post_view = move || {
         post.with(cx, |post| {
@@ -122,7 +120,7 @@ pub fn datetime(s: OffsetDateTime) -> anyhow::Result<String> {
 #[allow(non_snake_case)]
 #[component]
 pub fn BlogList(cx: Scope) -> impl IntoView {
-    let posts = create_resource(cx, || (), |_| async { get_blogs(None).await });
+    let posts = create_resource(cx, || (), move |_| get_blogs(cx, None));
     let posts_view = move || {
         posts.with(cx, |posts| {
             let posts = posts.clone().unwrap();
@@ -164,31 +162,5 @@ pub fn BlogAbbr(cx: Scope, #[prop()] post: BlogAbbrDisplay) -> impl IntoView {
             <span class="post-meta">{ post.created_from_now }</span>
             <h3><a href=format!("/blog/{}", post.number) class="post-link">{ post.title }</a></h3>
         </li>
-    }
-}
-
-#[cfg(all(test, feature = "ssr"))]
-mod test {
-    use super::*;
-    use time::{format_description, OffsetDateTime};
-    #[test]
-    fn test_datetime() {
-        let s = OffsetDateTime::now_utc();
-        dbg!(datetime(s).unwrap());
-        dbg!("{}", from_now(s).unwrap());
-    }
-    #[tokio::test]
-    async fn test_from_now() {
-        let format = format_description::parse(
-             "[year]-[month]-[day] [hour padding:none]:[minute]:[second].[subsecond] [offset_hour sign:mandatory]:[offset_minute]:[offset_second]",
-         ).unwrap();
-
-        // let format = format_description!(
-        //     "[year]-[month]-[day] [hour]:[minute]:[second] [offset_hour sign:mandatory]:[offset_minute]:[offset_second]"
-        // );
-        println!("{}", OffsetDateTime::now_utc().format(&format).unwrap());
-        let s = "2022-02-03 2:07:03.410441 +00:00:00";
-        let date = OffsetDateTime::parse(s, &format).unwrap();
-        assert_eq!("2022-02-03 2:07:03.410441 +00:00:00", date.to_string())
     }
 }

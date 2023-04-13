@@ -1,5 +1,6 @@
 use leptos::*;
 pub mod api;
+#[cfg(feature = "ssr")]
 pub mod backend;
 pub mod components;
 pub mod error_template;

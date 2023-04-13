@@ -1,12 +1,8 @@
-#[cfg(feature = "ssr")]
-use crate::backend::es::get_client;
 use anyhow::{anyhow, Result};
-#[cfg(feature = "ssr")]
 use elasticsearch::{Elasticsearch, SearchParts};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-#[cfg(feature = "ssr")]
 pub async fn get_by_number(id: &u64, index: &str, es_client: &Elasticsearch) -> Result<Post> {
     let r = es_client
         .search(SearchParts::Index(&[index]))
@@ -28,7 +24,6 @@ pub async fn get_by_number(id: &u64, index: &str, es_client: &Elasticsearch) -> 
         None => Err(anyhow!("没有找到")),
     }
 }
-#[cfg(feature = "ssr")]
 pub async fn get_latest_with_filter(
     index: &str,
     es_client: &Elasticsearch,
@@ -107,24 +102,8 @@ pub struct Post {
 //     }
 // }
 
-#[cfg(not(feature = "ssr"))]
-pub async fn get_one_blog(id: u64) -> Result<Post> {
-    Ok(Post {
-        id,
-        number: 0,
-        title: "".to_string(),
-        labels: vec![],
-        state: "".to_string(),
-        created_at: time::OffsetDateTime::now_utc(),
-        updated_at: time::OffsetDateTime::now_utc(),
-        body_html: "".to_string(),
-    })
-}
-
-#[cfg(feature = "ssr")]
-pub async fn get_one_blog(id: u64) -> Result<Post> {
-    let es_client = get_client().await?;
-    let p = get_by_number(&id, "blog", &es_client).await?;
+pub async fn get_one_blog(es_client: &Elasticsearch, id: u64) -> Result<Post> {
+    let p = get_by_number(&id, "blog", es_client).await?;
 
     Ok(p)
 }
@@ -134,27 +113,22 @@ pub async fn get_one_blog(id: u64) -> Result<Post> {
 //     pub outdated_info: String,
 // }
 
-#[cfg(feature = "ssr")]
-pub async fn get_all_blog() -> Result<String> {
-    let es_client = get_client().await?;
+pub async fn get_all_blog(es_client: Elasticsearch) -> Result<String> {
     let posts = get_latest_with_filter("blog", &es_client, None).await?;
     Ok(json!({
         "posts": posts,
     })
     .to_string())
 }
-#[cfg(feature = "ssr")]
-pub async fn get_blogs_with_filter(filter: Option<String>) -> Result<Vec<Post>> {
-    let es_client = get_client().await?;
-    let posts = get_latest_with_filter("blog", &es_client, filter).await?;
+pub async fn get_blogs_with_filter(
+    es_client: &Elasticsearch,
+    filter: Option<String>,
+) -> Result<Vec<Post>> {
+    let posts = get_latest_with_filter("blog", es_client, filter).await?;
     Ok(posts)
 }
-#[cfg(not(feature = "ssr"))]
-pub async fn get_blogs_with_filter(_filter: Option<String>) -> Result<Vec<Post>> {
-    Ok(vec![])
-}
 
-#[cfg(all(test, feature = "ssr"))]
+#[cfg(test)]
 mod test {
     #[tokio::test]
     async fn test_get_by_number() {
