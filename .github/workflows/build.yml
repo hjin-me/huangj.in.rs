@@ -1,7 +1,8 @@
 name: Build Image
 on:
   push:
-
+    branches:
+      - main
     tags:
       - "**"             # Push events to v1 tag
 jobs:
@@ -19,4 +20,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           tag_names: true
           dockerfile: blog/Dockerfile
+          snapshot: true
 

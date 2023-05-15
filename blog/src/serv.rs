@@ -1,4 +1,4 @@
-use axum::extract::Path;
+use axum::extract::{Path, RawQuery};
 use axum::response::IntoResponse;
 use axum::{
     body::Body as AxumBody,
@@ -106,12 +106,13 @@ async fn server_fn_handler(
     Extension(es_client): Extension<Arc<Elasticsearch>>,
     path: Path<String>,
     headers: HeaderMap,
-    // raw_query: RawQuery,
+    raw_query: RawQuery,
     request: Request<AxumBody>,
 ) -> impl IntoResponse {
     handle_server_fns_with_context(
         path,
         headers,
+        raw_query,
         move |cx| {
             provide_context(cx, es_client.clone());
         },
