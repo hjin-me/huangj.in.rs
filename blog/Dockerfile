@@ -18,10 +18,10 @@ RUN locale-gen zh_CN.UTF-8; \
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime;
 ENV TZ Asia/Shanghai
 ENV LANG zh_US.utf8
-COPY --from=builder /build/target/server/release/hj-blog /usr/local/bin/hj-blog
+COPY --from=builder /build/target/server/release/serv /usr/local/bin/blog-serv
 COPY --from=builder /build/target/site /webser/www
 ENV LEPTOS_OUTPUT_NAME hj
 ENV LEPTOS_SITE_ROOT /webser/www
 ENV LEPTOS_SITE_ADDR 0.0.0.0:3000
 EXPOSE 3000
-ENTRYPOINT ["hj-blog"]
+ENTRYPOINT ["blog-serv"]
