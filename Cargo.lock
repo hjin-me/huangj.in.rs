@@ -276,21 +276,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
- "cfg-if",
- "clap",
- "console_error_panic_hook",
- "console_log",
  "elasticsearch",
- "futures",
- "gloo-net",
  "http",
  "lazy_static",
  "leptos",
  "leptos_axum",
- "leptos_meta",
  "leptos_reactive",
- "leptos_router",
- "once_cell",
  "reqwest",
  "serde",
  "serde_json",
@@ -302,7 +293,6 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -319,9 +309,7 @@ name = "browser"
 version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
- "console_log",
  "leptos",
- "log",
  "tracing-wasm",
  "ui",
  "wasm-bindgen",
@@ -2308,21 +2296,16 @@ dependencies = [
  "anyhow",
  "axum",
  "biz",
- "cfg-if",
  "clap",
  "console_error_panic_hook",
  "console_log",
  "elasticsearch",
- "futures",
- "gloo-net",
  "http",
- "lazy_static",
  "leptos",
  "leptos_axum",
  "leptos_meta",
  "leptos_reactive",
  "leptos_router",
- "once_cell",
  "reqwest",
  "serde",
  "serde_json",
@@ -2335,7 +2318,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "ui",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -2850,8 +2832,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "biz",
- "cfg-if",
- "console_error_panic_hook",
  "console_log",
  "elasticsearch",
  "http",

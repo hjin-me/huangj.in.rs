@@ -10,9 +10,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 ui = { path = "../ui" }
-leptos = { workspace = true, features = ["serde", "hydrate"] }
-log = "0.4"
-console_log = "1.0.0"
+leptos = { workspace = true, features = ["serde", "hydrate", "stable"] }
 console_error_panic_hook = "0.1"
 tracing-wasm = "0.2.1"
 wasm-bindgen = "0.2.86"
