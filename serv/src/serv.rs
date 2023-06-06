@@ -1,3 +1,4 @@
+use crate::fallback::file_and_error_handler;
 use axum::extract::{Path, RawQuery};
 use axum::response::IntoResponse;
 use axum::{
@@ -7,12 +8,9 @@ use axum::{
     routing::{any, get},
     Router,
 };
+use biz::github_hook;
 use clap::Parser;
 use elasticsearch::Elasticsearch;
-use hj_blog::api;
-use hj_blog::backend::github_hook;
-use hj_blog::components::home::*;
-use hj_blog::fallback::file_and_error_handler;
 use leptos::*;
 use leptos_axum::{generate_route_list, handle_server_fns_with_context, LeptosRoutes};
 use std::fs;
@@ -21,6 +19,8 @@ use tower::ServiceBuilder;
 use tower_http::compression::CompressionLayer;
 use tower_http::trace::TraceLayer;
 use tracing::{info, Level};
+use ui::api;
+use ui::home::BlogApp;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -48,13 +48,13 @@ pub async fn serv() {
     info!("Starting up {}, {:?}", &args.config, pwd);
     let contents =
         fs::read_to_string(&args.config).expect("Should have been able to read the file");
-    let serv_conf: hj_blog::backend::Config = toml::from_str(contents.as_str()).unwrap();
+    let serv_conf: biz::Config = toml::from_str(contents.as_str()).unwrap();
 
     api::register_server_functions();
 
-    let es_client = Arc::new(hj_blog::backend::es::init(&serv_conf.es_url).expect("初始化ES失败"));
+    let es_client = Arc::new(biz::es::init(&serv_conf.es_url).expect("初始化ES失败"));
 
-    hj_blog::backend::serv(&es_client, &serv_conf)
+    biz::serv(&es_client, &serv_conf)
         .await
         .expect("同步文章数据失败");
 

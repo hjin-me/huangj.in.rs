@@ -220,7 +220,7 @@ async fn upsert_issue(
 
 #[cfg(test)]
 mod test {
-    use crate::backend::github_issues::*;
+    use super::*;
     use std::fs;
 
     #[derive(Debug, Deserialize)]

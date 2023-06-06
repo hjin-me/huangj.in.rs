@@ -2,8 +2,8 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 
-use crate::components::blog::*;
-use crate::components::search::*;
+use crate::blog::*;
+use crate::search::*;
 
 #[allow(non_snake_case)]
 #[component]

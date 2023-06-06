@@ -1,5 +1,3 @@
-use crate::error_template::{ErrorTemplate, ErrorTemplateProps};
-use crate::errors::TodoAppError;
 use axum::response::Response as AxumResponse;
 use axum::{
     body::{boxed, Body, BoxBody},
@@ -11,6 +9,8 @@ use leptos::{view, Errors, LeptosOptions};
 use std::sync::Arc;
 use tower::ServiceExt;
 use tower_http::services::ServeDir;
+use ui::error_template::*;
+use ui::errors::TodoAppError;
 
 pub async fn file_and_error_handler(
     uri: Uri,

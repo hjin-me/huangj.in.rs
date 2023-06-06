@@ -15,7 +15,7 @@ pub async fn get_single_blog(cx: Scope, id: u64) -> Result<BlogDisplay, ServerFn
     let es_client = use_context::<std::sync::Arc<Elasticsearch>>(cx).ok_or(
         ServerFnError::ServerError("Elasticsearch client not found".to_string()),
     )?;
-    let post = crate::backend::blog::get_one_blog(&es_client, id)
+    let post = biz::blog::get_one_blog(&es_client, id)
         .await
         .map(BlogDisplay::from)
         .map_err(|e| ServerFnError::ServerError(e.to_string()))?;
@@ -30,7 +30,7 @@ pub async fn get_blogs(
     let es_client = use_context::<std::sync::Arc<Elasticsearch>>(cx).ok_or(
         ServerFnError::ServerError("Elasticsearch client not found".to_string()),
     )?;
-    let posts = crate::backend::blog::get_blogs_with_filter(&es_client, filter)
+    let posts = biz::blog::get_blogs_with_filter(&es_client, filter)
         .await
         .map(|ps| {
             ps.iter()
@@ -55,8 +55,8 @@ pub struct BlogAbbrDisplay {
 }
 
 #[cfg(feature = "ssr")]
-impl From<crate::backend::blog::Post> for BlogAbbrDisplay {
-    fn from(p: crate::backend::blog::Post) -> Self {
+impl From<biz::blog::Post> for BlogAbbrDisplay {
+    fn from(p: biz::blog::Post) -> Self {
         BlogAbbrDisplay {
             number: p.number,
             title: p.title,
@@ -84,8 +84,8 @@ pub struct BlogDisplay {
 }
 
 #[cfg(feature = "ssr")]
-impl From<crate::backend::blog::Post> for BlogDisplay {
-    fn from(p: crate::backend::blog::Post) -> Self {
+impl From<biz::blog::Post> for BlogDisplay {
+    fn from(p: biz::blog::Post) -> Self {
         let outdated_info = outdated(&p);
         BlogDisplay {
             id: p.id,
@@ -149,7 +149,7 @@ pub fn from_now(s: OffsetDateTime) -> anyhow::Result<String> {
 }
 
 #[cfg(feature = "ssr")]
-fn outdated(post: &crate::backend::blog::Post) -> String {
+fn outdated(post: &biz::blog::Post) -> String {
     use std::ops::Sub;
     let mut outdated = false;
     for o in &post.labels {

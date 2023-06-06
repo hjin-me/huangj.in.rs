@@ -1,5 +1,5 @@
 use crate::api::blog::get_blogs;
-use crate::components::blog::*;
+use crate::blog::*;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;

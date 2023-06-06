@@ -1,5 +1,5 @@
-use crate::backend::github_issues::sync_all_issues;
-use crate::backend::Config;
+use crate::github_issues::sync_all_issues;
+use crate::Config;
 use axum::extract::{Extension, TypedHeader};
 use axum::headers;
 use axum::headers::{Error, Header, HeaderName};
