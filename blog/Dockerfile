@@ -1,8 +1,6 @@
-FROM hjin/rust-nightly-wasm as builder
+FROM hjin/leptos-build:20230606091948f37d36 as builder
 WORKDIR /build
 COPY . .
-RUN cd blog
-RUN cargo install --locked cargo-leptos
 RUN cargo leptos build --release
 
 # debian release as the same as golang image
