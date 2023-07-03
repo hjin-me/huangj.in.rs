@@ -4,14 +4,12 @@ members = [
 ]
 
 [workspace.dependencies]
-leptos = { version = "0.3", default-features = false, features = ["stable"] }
-leptos_meta = { version = "0.3", default-features = false }
-leptos_router = { version = "0.3", default-features = false, features = [
-    "stable",
-] }
-leptos_dom = { version = "0.3", default-features = false }
-leptos_axum = { version = "0.3", default-features = false }
-leptos_reactive = { version = "0.3", default-features = false }
+leptos = { version = "0.4" }
+leptos_meta = { version = "0.4" }
+leptos_router = { version = "0.4" }
+leptos_dom = { version = "0.4" }
+leptos_axum = { version = "0.4" }
+leptos_reactive = { version = "0.4" }
 
 
 

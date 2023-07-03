@@ -4,12 +4,6 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-#[cfg(feature = "ssr")]
-pub fn register_server_functions() {
-    let _ = GetSingleBlog::register();
-    let _ = GetBlogs::register();
-}
-
 #[server(GetSingleBlog, "/api")]
 pub async fn get_single_blog(cx: Scope, id: u64) -> Result<BlogDisplay, ServerFnError> {
     let es_client = use_context::<std::sync::Arc<Elasticsearch>>(cx).ok_or(

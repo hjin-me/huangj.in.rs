@@ -7,9 +7,9 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.66"
-leptos = { workspace = true, default-features = false, features = ["serde", "stable"] }
-leptos_axum = { workspace = true, default-features = false }
-leptos_reactive = { workspace = true, default-features = false }
+leptos = { workspace = true, features = ["serde"] }
+leptos_axum = { workspace = true }
+leptos_reactive = { workspace = true }
 serde = { version = "1.0.148", features = ["derive"] }
 serde_json = "1.0.89"
 reqwest = { version = "0.11.13", features = ["json"] }

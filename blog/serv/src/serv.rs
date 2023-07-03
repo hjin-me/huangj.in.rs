@@ -19,7 +19,6 @@ use tower::ServiceBuilder;
 use tower_http::compression::CompressionLayer;
 use tower_http::trace::TraceLayer;
 use tracing::{info, Level};
-use ui::api;
 use ui::home::BlogApp;
 
 #[derive(Parser, Debug)]
@@ -50,8 +49,6 @@ pub async fn serv() {
         fs::read_to_string(&args.config).expect("Should have been able to read the file");
     let serv_conf: biz::Config = toml::from_str(contents.as_str()).unwrap();
 
-    api::register_server_functions();
-
     let es_client = Arc::new(biz::es::init(&serv_conf.es_url).expect("初始化ES失败"));
 
     biz::serv(&es_client, &serv_conf)
@@ -76,7 +73,7 @@ pub async fn serv() {
             get(server_fn_handler).post(server_fn_handler),
         )
         .leptos_routes_with_context(
-            leptos_options.clone(),
+            &leptos_options,
             routes,
             move |cx| {
                 provide_context(cx, leptos_es_client.clone());
@@ -84,6 +81,7 @@ pub async fn serv() {
             |cx| view! { cx, <BlogApp/> },
         )
         .fallback(file_and_error_handler)
+        .with_state(leptos_options.clone())
         .layer(Extension(Arc::new(leptos_options)))
         .layer(Extension(Arc::new(serv_conf)))
         .layer(Extension(es_client))
